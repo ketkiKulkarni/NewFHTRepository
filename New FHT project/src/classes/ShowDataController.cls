@@ -132,7 +132,7 @@ public with sharing class ShowDataController {
      public PageReference refresh() {
         wrapList.clear();
         return null;
-        system.debug('My changes in server');
+        system.debug('Server changes done by me');
      }
      
 }
