@@ -1,0 +1,75 @@
+<apex:page controller="ShowDataController"  readOnly="true">
+    <style  type="text/css">
+                #assign-action-spinner-main {
+                                                position: fixed;left: 0;top: 0;
+                                                background-color:rgba(0,0,0,.6);height: 100%;
+                                                width: 100%;z-index: 999;align: center;
+                                                vertical-align: middle;
+                }
+                #assign-action-spinner-content {
+                                                    position: absolute; top: 50%;left: 50%;
+                                                    z-index: 1000;background-color: #F5FCFF;
+                                                    width: 204;height: 94; border-radius: 1em;
+                                                    border: 1px solid #CEECFF;
+                                                    padding: 20px 40px 20px 40px;
+                                                    margin-left: -116px;margin-top: -36px;
+                }
+                #assign-action-spinner-content img {
+                                                        width: 32;height: 32;align: center;
+                                                        vertical-align: middle;
+                }
+                #assign-action-spinner-content p {
+                                                    display: inline;font-size: 135%;
+                                                    font-weight: bold;
+                }
+            </style>
+    <apex:form > 
+        <apex:actionStatus id="actStatusId" layout="block">
+            <apex:facet name="start">
+                <div id="assign-action-spinner-main">
+                    <div id="assign-action-spinner-content">
+                        <img src="/img/analytics/reportbuilder/icons/spinner32.gif"
+                        alt="Processing..." title="Processing..." /> 
+                        <p>Processing...</p>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionStatus>
+    
+        <apex:pageBlock id="pageblock0">
+            <apex:outputLabel ><b>Select Object</b></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:selectList value="{!objects}" multiselect="false" size="1" > 
+                <apex:selectOptions value="{!objitems}"/>
+            <apex:actionSupport event="onchange" rerender="FieldSelectList,Op" action="{!refresh}" />
+            </apex:selectList>
+            
+            <apex:outputLabel >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Select Fields</b></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:selectList value="{!selectedFields}" multiselect="false" size="1" onchange="af1();" id="FieldSelectList" > 
+                <apex:selectOptions value="{!Fields}"/>
+            </apex:selectList>
+        </apex:pageBlock> 
+   
+        <apex:outputPanel id="Op">
+            <apex:pageblock rendered="{!IF(wraplist.size!=0 , 'true', 'false')}">
+            <apex:pageBlockTable value="{!wraplist}" var="a" columns="3">
+                <apex:column >
+                    <apex:facet name="header">Date</apex:facet>
+                   <apex:outputText value=" {!a.lstmodifiedDate}"/> 
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">User</apex:facet>
+                  {!a.userId} 
+                </apex:column> 
+                 <apex:column >
+                    <apex:facet name="header">Action</apex:facet>
+                  {!a.updateRec} 
+                
+                </apex:column>            
+            </apex:pageBlockTable>
+            </apex:pageblock> 
+        </apex:outputPanel>
+        
+        <apex:actionFunction name="af1" rerender="Op" action="{!getshowFHTDataList}" status="actStatusId"/>
+    </apex:form>
+   
+</apex:page>

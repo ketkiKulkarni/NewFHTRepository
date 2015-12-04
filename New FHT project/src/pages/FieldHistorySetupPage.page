@@ -1,0 +1,178 @@
+<apex:page controller="FieldHistorySetupPageController"> 
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<!-- <apex:stylesheet value="{!URLFOR($Resource.BootStrap, 'bootstrap/css/bootstrap.css')}"/> -->
+<!-- <apex:styleSheet value="{!URLFOR($Resource.BootStrap,'/bootstrap/css/bootstrap.min.css')}" /> -->
+<!-- <apex:styleSheet value="{!URLFOR($Resource.BootStrap,'/bootstrap/css/bootstrap-theme.min.css')}" /> -->
+
+<!-- <apex:includeScript value="{!URLFOR($Resource.BootStrap,'/bootstrap/js/ie-emulation-modes-warning.js')}" /> -->
+<!-- <apex:includeScript value="{!URLFOR($Resource.BootStrap,'/bootstrap/js/jquery.min.js')}"/> -->
+<!-- <apex:includeScript value="{!URLFOR($Resource.BootStrap,'/bootstrap/js/bootstrap.min.js')}" /> -->
+<!-- <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"/> -->
+<!-- <apex:includeScript value="{!URLFOR($Resource.BootStrap, 'bootstrap/js/bootstrap.js')}"/> -->
+<style type="text/css">
+   
+       body {
+           background-color:#ccc;
+       }
+       .LabelClass{
+            text-align:-webkit-right !important;
+            
+       }
+
+       .checkboxClass {
+            height:13px !important;
+            width:35px !important;
+       }
+       
+       <!--
+       .message .messageText {
+           margin-left: 8px !important;
+           color: green !important;
+        }
+        -->
+        
+        .pbSubheader h3 {
+        font-size: 1.1em;
+        color: black;
+        }
+        .bPageBlock .message {
+            margin: 1px 467px 10px -1px;
+        }
+       #assign-action-spinner-main {
+          position: fixed;left: 0;top: 0;
+          background-color:rgba(0,0,0,.6);height: 100%;
+          width: 100%;z-index: 999;align: center;
+          vertical-align: middle;
+       }
+       #assign-action-spinner-content {
+           position: absolute; top: 50%;left: 50%;
+           z-index: 1000;background-color: #F5FCFF;
+           width: 204;height: 94; border-radius: 1em;
+           border: 1px solid #CEECFF;
+           padding: 20px 40px 20px 40px;
+           margin-left: -116px;margin-top: -36px;
+       }
+       #assign-action-spinner-content img {
+           width: 32;height: 32;align: center;
+           vertical-align: middle;
+       }
+       #assign-action-spinner-content p {
+          display: inline;font-size: 135%;
+          font-weight: bold;
+       }
+       .SelectAllCheboxPosition
+       {
+           padding-left: 0px !important;
+       }
+       .bPageBlock .dataCol {
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 1px;
+    text-align: left;
+}
+   </style>    
+   
+    <script type="text/javascript">
+     function selectAllCheckboxes(obj,receivedInputID) {
+          var inputCheckBox = document.getElementsByTagName("input");
+          for(var i=0; i<inputCheckBox.length; i++) {
+              if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1) {
+                  inputCheckBox[i].checked = obj.checked; 
+              }
+          } 
+  
+    }
+    function selectDeselect(receivedInputID) {
+        var inputCheckBox = document.getElementsByClassName("selectAllClass");
+        if(inputCheckBox[0].checked==true) {                 
+               inputCheckBox[0].checked = false;
+        }
+        var inputCheckBox1 = document.getElementsByClassName("selectDeselectAll");
+        var flag=1;
+        for(var i=0; i<inputCheckBox1.length; i++) {
+            console.log('all checkbox==='+inputCheckBox1.length);
+                if(inputCheckBox1[i].checked==true) {
+                    flag=1;
+                }
+                else {
+                    flag=0;
+                    break;
+                }
+        }
+        if(flag==1) {
+            inputCheckBox[0].checked = true;
+        }      
+    }
+    /*function checkFieldSelectedOrNot ()
+    {
+        var allInputCheckBox = document.getElementsByClassName("selectDeselectAll");
+        consol.log('Hi');
+        Alert('You have not selected any field....');
+        for(var i=0; i<allInputCheckBox.length; i++) {
+            var flag=0;
+            if(allInputCheckBox[i].checked==false) {
+                    flag=1;
+                }
+                else {
+                    flag=0;
+                    break;
+                }
+        }
+        if(flag==1) {
+            Alert('You have not selected any field....');
+        }
+        
+    }*/
+    </script>
+    <apex:form id="frm"> 
+        <div class="navbar navbar-inverse navbar-fixed-top"></div>
+        <apex:pageBlock id="pageblock0">     
+             <b><apex:pageMessages id="showmsg" /></b>      
+               <apex:outputLabel ><b>Select Object </b></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:selectList value="{!objects}" multiselect="false" size="1" onchange="af1();"> 
+                          <apex:selectOptions value="{!objitems}"/>   
+                     </apex:selectList> <br></br><br></br>
+            <apex:actionStatus id="actStatusId" layout="block">
+            <apex:facet name="start">
+                <div id="assign-action-spinner-main">
+                    <div id="assign-action-spinner-content">
+                        <img src="/img/analytics/reportbuilder/icons/spinner32.gif"
+                        alt="Processing..." title="Processing..." /> 
+                        <p>Processing...</p>
+                    </div>
+                </div>
+            </apex:facet>
+            </apex:actionStatus>
+            <apex:pageBlockSection columns="2" title="Track old and new values" rendered="{!NOT(ISBLANK(objects))}" collapsible="false" id="Section1">
+                <apex:inputCheckbox onclick="selectAllCheckboxes(this,'inputId')" id="selectAll"  value="{!isAllSelected}"  styleClass="checkboxClass selectAllClass" rendered="{!NOT(ISBLANK(objects))}"><b>Select All</b>&nbsp;&nbsp;&nbsp;&nbsp;</apex:inputCheckbox>                 
+                  <apex:outputLabel ></apex:outputLabel>        <!--   1 -->
+                 <apex:pageBlockSection columns="4" id="result-panel" >  
+                       <apex:repeat value="{!wraperClassList}" var="c">                     
+                        <apex:pageBlockSectionItem >               
+                             <apex:outputLabel value="{!c.fieldLabel}" styleClass="LabelClass"/> 
+                             <apex:inputCheckbox value="{!c.isSelected}" id="inputId" onChange="selectDeselect('inputid')" styleClass="checkboxClass selectDeselectAll"/>
+                        </apex:pageBlockSectionItem>
+                      </apex:repeat>    
+                 </apex:pageBlockSection> <apex:outputLabel ></apex:outputLabel> <!-- 2 --> 
+                 <apex:pageBlockSectionItem >
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(objects))}" Style="position:relative;left:30%;">
+                            <apex:commandButton action="{!SelectedFieldsName}" value="Save"/> 
+                            <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                        </apex:outputPanel>
+                      <apex:actionStatus id="navigateStatus">
+                                <apex:facet name="stop"> 
+                                    <apex:outputPanel id="navigateButtons"  Style="position:relative;left:76%;">
+                                        <apex:commandButton action="{!Beginning}" title="Beginning" value="<<" disabled="{!disablePrevious}" reRender="pageblock0"/>
+                                        <apex:commandButton action="{!Previous}" title="Previous" value="<" disabled="{!disablePrevious}" reRender="pageblock0"/>        
+                                        <apex:commandButton action="{!Next}" title="Next" value=">" disabled="{!disableNext}" reRender="pageblock0"/>
+                                        <apex:commandButton action="{!End}" title="End" value=">>" disabled="{!disableNext}" reRender="pageblock0"/>
+                                    </apex:outputPanel>
+                                </apex:facet>
+                        </apex:actionStatus> 
+               </apex:pageBlockSectionItem>                   
+            </apex:pageBlockSection>  
+        </apex:pageBlock>
+        <apex:actionFunction name="af1" reRender="pageblock0" action="{!refresh}"  status="actStatusId" />     
+    </apex:form>
+</apex:page>
